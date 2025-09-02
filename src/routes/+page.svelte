@@ -19,29 +19,22 @@
     ];
 
     async function generatePDF() {
-        const element = document.body; // Capture the entire page
-        const canvas = await html2canvas(element, {
-            scale: 2, // Increase scale for better quality
-            useCORS: true, // Handle cross-origin issues
-            width: document.documentElement.scrollWidth + 20, // Add padding to ensure full width
-            height: document.documentElement.scrollHeight // Ensure full height is captured
-        });
-
-        const imgData = canvas.toDataURL("image/png");
-        const pdfWidth = canvas.width;
-        const pdfHeight = canvas.height;
-
-        console.log("Canvas dimensions:", { width: canvas.width, height: canvas.height });
-        console.log("Document dimensions:", { scrollWidth: document.documentElement.scrollWidth, scrollHeight: document.documentElement.scrollHeight });
-
+ 
         const pdf = new jsPDF({
             orientation: "portrait",
             unit: "px",
-            format: [pdfWidth, pdfHeight] // Match PDF dimensions to canvas
+            hotfixes: ["px_scaling"],
+            format: "A2",
+            userUnit: 300
         });
 
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save("page.pdf");
+        pdf.html(document.body, {
+            callback: function (doc) {
+                doc.save("page.pdf");
+            },
+            x: 0,
+            y: 0
+        });
     }
 </script>
 
@@ -53,8 +46,9 @@
         <div class="right-align">
             <Nulook />
         </div>
+        <button class="generate-pdf" on:click={generatePDF}>Generate PDF</button
+        >
     </div>
-    <button class="generate-pdf" on:click={generatePDF}>Generate PDF</button>
 </div>
 
 <style>
@@ -63,6 +57,8 @@
         flex-direction: column;
         align-items: center;
         position: relative; /* Allow relative positioning */
+        margin-left: 30rem;
+        margin-right: 30rem;
     }
 
     .right-align {
@@ -81,6 +77,7 @@
         font-size: 1rem;
         cursor: pointer;
         transition: background-color 0.3s;
+        margin-right: auto;
     }
 
     .generate-pdf:hover {
