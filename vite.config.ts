@@ -3,5 +3,5 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [sveltekit()],
-	base:"/ugm-pdf-generator/"
+	base: '/ugm-pdf-generator/'
 });

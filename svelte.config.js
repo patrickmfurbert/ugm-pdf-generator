@@ -1,5 +1,7 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import fs from 'fs-extra';
+import path from 'path';
 
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -17,13 +19,22 @@ const config = {
 			// these options are set automatically — see below
 			pages: 'build',
 			assets: 'build',
-			fallback: undefined,
+			fallback: 'index.html', // Set a fallback file for SPA behavior
 			precompress: false,
 			strict: false,
-			appDir: 'app'
+			appDir: 'app' // Using 'app' without underscore
 		}),
 		paths: {
-			base: process.env.NODE_ENV === 'production' ? '/ugm-pdf-generator' : '', // Adjust base path for GitHub Pages
+			base: '/ugm-pdf-generator', // Always use the base path, not just in production
+		},
+		prerender: {
+			entries: ['*'], // Prerender all routes
+			crawl: true,    // Enable crawling to find all routes
+			handleHttpError: ({ path, referrer, message }) => {
+				// Log the error but don't fail the build
+				console.warn(`Prerendering error for ${path}: ${message}`);
+				return;
+			}
 		}
 	}
 };
